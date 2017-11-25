@@ -1,5 +1,10 @@
 package com.company;
 
+import com.company.module.BankPlayer;
+import com.company.module.CardDealer;
+import com.company.module.DeckOfCards;
+import com.company.module.MePlayer;
+
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -7,15 +12,19 @@ import java.util.Scanner;
 public class Main {
     public static ArrayList<String[]> myCards = new ArrayList<String[]>();
     public static ArrayList<String[]> bankCards = new ArrayList<String[]>();
-    public static int myCredits = 250;
 
     public static void main(String[] args) {
+       DeckOfCards deckOfCards = new DeckOfCards();
+       MePlayer mePlayer = new MePlayer("Mindaugas");
+       BankPlayer bankPlayer = new BankPlayer();
+       CardDealer dealer = new CardDealer(deckOfCards,mePlayer,bankPlayer);
+
         Scanner s = new Scanner(System.in);
         int command = 0;
         int betValue = 0;
 
         while(command != 2) {
-            System.out.println("My credits : $"+myCredits);
+            System.out.println("My credits : $"+mePlayer.getMoney());
             System.out.println("1 - Place bets\n" +
                     "2 - Quit");
             command = s.nextInt();
@@ -24,8 +33,8 @@ public class Main {
                     do {
                         System.out.println("Place your bets:");
                         betValue = s.nextInt();
-                    }while(betValue > myCredits || betValue == 0);
-                    myCredits = bet(betValue,myCredits);
+                    }while(betValue > mePlayer.getMoney() || betValue == 0);
+                    mePlayer.setMoney(bet(betValue,mePlayer.getMoney()));
                     System.out.println( "Bet : $"+betValue+"\n");
                     break;
                 case 2:
@@ -34,14 +43,15 @@ public class Main {
                     System.out.println("Command not exist!");
                     break;
             }
-            deal(myCards,2);
-            deal(bankCards,1);
+//            deal(myCards,2);
+//            deal(bankCards,1);
+            dealer.deal();
             int commandInner = 0;
             while (commandInner != 2 && command == 1) {
                 System.out.println("My cards ("+countScore(myCards)+")");
-                getCards(myCards);
+                System.out.println(mePlayer.getCardsInHands());
                 System.out.println("Bank cards ("+countScore(bankCards)+")");
-                getCards(bankCards);
+                System.out.println(bankPlayer.getCardsInHands());
 
                 System.out.println("\n"+"1 - Hit\n" +
                         "2 - Stand");
@@ -49,7 +59,7 @@ public class Main {
 
                 switch (commandInner) {
                     case 1:
-                        createCard(myCards);
+                        mePlayer.addCardToHands(deckOfCards.giveCard());
                         if (countScore(myCards) > 21) {
                             commandInner = 2;
                             stand(betValue);
@@ -96,7 +106,7 @@ public class Main {
 
         myCards.clear();
         bankCards.clear();
-        if(myCredits <= 0){
+        if(250 <= 0){
             gameOver();
         }
     }
@@ -127,13 +137,13 @@ public class Main {
         int firstCard = cardValue(getCard(0,myCards),0);
         int secondCard = cardValue(getCard(1,myCards),0);
 
-        if((firstCard + secondCard) == 21){
-            myCredits += (betValue*2.5);
-        }else {
-            myCredits += (betValue * 2);
-        }
+//        if((firstCard + secondCard) == 21){
+//            myCredits += (betValue*2.5);
+//        }else {
+//            myCredits += (betValue * 2);
+//        }
 
-        return myCredits;
+        return 0;
     }
 
     public static int countScore(ArrayList<String[]> playerCards){
