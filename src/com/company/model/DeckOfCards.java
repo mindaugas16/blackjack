@@ -1,21 +1,20 @@
-package com.company.module;
+package com.company.model;
+
 
 import java.util.ArrayList;
 
 public class DeckOfCards {
-    private ArrayList<Card> deck = new ArrayList<Card>();
+    private ArrayList<Card> deck = new ArrayList<>();
 
     public DeckOfCards() {
-        String[] values = {"Ace","2","3","4","5","6","7","8","9","10","Jack","Queen","King"};
-        String[] signs = {"Spades","Hearts","Clubs","Diamonds"};
-        for (String sign : signs) {
-            for (String value:values) {
-                this.deck.add(new Card(value, sign));
+        for (Suit suit : Suit.values()) {
+            for (Value value : Value.values()) {
+                this.deck.add(new Card(value, suit));
             }
         }
     }
     public void shuffle() {
-        ArrayList<Card> temp = new ArrayList<Card>();
+        ArrayList<Card> temp = new ArrayList<>();
         while (!deck.isEmpty()) {
             int loc = (int) (Math.random() * deck.size());
             temp.add(deck.get(loc));
