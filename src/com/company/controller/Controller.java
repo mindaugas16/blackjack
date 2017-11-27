@@ -11,15 +11,13 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 
-import javax.xml.soap.Text;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Optional;
 
 public class Controller {
     private Hand player;
     private Hand dealer;
     private DeckOfCards deck;
+
+    private int placedBet;
 
     @FXML
     private VBox dealerCards, playerCards;
@@ -39,6 +37,18 @@ public class Controller {
     private void initialize(){
         player = new Hand(playerCards);
         dealer = new Hand(dealerCards);
+
+        player.scoreProperty().addListener((obs, old, newValue) -> {
+            if (newValue.intValue() >= 21) {
+                stand();
+            }
+        });
+
+        dealer.scoreProperty().addListener((obs, old, newValue) -> {
+            if (newValue.intValue() >= 21) {
+                stand();
+            }
+        });
     }
 
     @FXML
@@ -60,10 +70,15 @@ public class Controller {
     }
     @FXML
     private void dealAction(){
-        player.placeBet(Integer.parseInt(playerBetField.getText()));
+        placedBet = Integer.parseInt(playerBetField.getText());
+        player.placeBet(placedBet);
+
         playerBetField.clear();
 
         gridPane.setVisible(true);
+        hitButton.setVisible(true);
+        standButton.setVisible(true);
+
         gridPaneLeft.setVisible(false);
         gridPaneTop.setVisible(false);
 
@@ -85,14 +100,16 @@ public class Controller {
     private void stand(){
         hitButton.setVisible(false);
         standButton.setVisible(false);
-        
-        if(dealer.getCardsInHands().get(1).getValue() == null) {
+
+
             dealer.getCardsInHands().remove(1);
             dealerCards.getChildren().remove(1);
             dealer.takeCard(deck.giveCard());
-        }
-        while (dealer.scoreProperty().get() < 17) {
-            dealer.takeCard(deck.giveCard());
+
+        if(player.scoreProperty().get() < 21) {
+            while (dealer.scoreProperty().get() < 17) {
+                dealer.takeCard(deck.giveCard());
+            }
         }
 
         mainPane.setBottom(new Label(winner()));
@@ -104,11 +121,12 @@ public class Controller {
         int playerScore = player.getScore();
         int dealerScore = dealer.getScore();
 
-        if (playerScore == dealerScore) {
+        if (playerScore == dealerScore && dealerScore <= 21 && playerScore <= 21) {
             message = "Push";
-        } else if (playerScore == 21 || dealerScore > 21 || playerScore > dealerScore) {
+        } else if (playerScore == 21 || dealerScore > 21 || (playerScore > dealerScore && playerScore <= 21)) {
             message = "You win";
-        } else if (dealerScore == 21 || playerScore > 21 || playerScore < dealerScore) {
+            player.moneyProperty().set(player.getMoney()+placedBet*2);
+        } else if (dealerScore == 21 || playerScore > 21 || (playerScore < dealerScore && dealerScore <= 21)) {
             message = "Bank wins";
         }
         return message;
