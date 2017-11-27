@@ -1,4 +1,4 @@
-package com;
+package com.company;
 
 public class Card {
     private Value value;
@@ -22,10 +22,6 @@ public class Card {
 
     public Value getValue() {
         return value;
-    }
-
-    public Suit getSuit() {
-        return suit;
     }
 
     @Override

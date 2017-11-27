@@ -1,4 +1,4 @@
-package com;
+package com.company;
 
 public enum Suit {
     Spades,Hearts,Clubs,Diamonds;
