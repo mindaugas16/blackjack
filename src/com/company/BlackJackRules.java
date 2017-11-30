@@ -1,5 +1,8 @@
 package com.company;
 
+
+import javafx.scene.Node;
+
 public class BlackJackRules implements BlackJackRulesInterface {
     private Hand player;
     private Hand dealer;
@@ -8,11 +11,19 @@ public class BlackJackRules implements BlackJackRulesInterface {
     public BlackJackRules(Hand player, Hand dealer) {
         this.player = player;
         this.dealer = dealer;
+        deck = new DeckOfCards();
     }
 
     public void prepareTable() {
-        deck = new DeckOfCards();
-        deck.shuffle();
+        if(!player.getCards().isEmpty() && !dealer.getCards().isEmpty()) {
+            putBackToDeck(player);
+            putBackToDeck(dealer);
+
+            player.getCards().clear();
+            player.setScore(0);
+            dealer.setScore(0);
+            dealer.getCards().clear();
+        }
     }
 
     public void gameOver() {
@@ -28,6 +39,7 @@ public class BlackJackRules implements BlackJackRulesInterface {
     public void stand(int betValue) {
         dealer.getCards().remove(1);
         giveCard(dealer);
+
         int myScore = player.getScore();
         int bankScore = dealer.getScore();
 
@@ -37,35 +49,30 @@ public class BlackJackRules implements BlackJackRulesInterface {
                 bankScore = dealer.getScore();
             }
         }
-        playersCards();
-
-        whoWins(myScore, bankScore, betValue);
-
-        player.getCards().clear();
-        player.setScore(0);
-        dealer.setScore(0);
-        dealer.getCards().clear();
         if (player.getCredits() <= 0) {
             gameOver();
         }
     }
 
-    public void whoWins(int playerScore, int dealerScore, int betValue) {
+    public String whoWins() {
+        int playerScore = player.getScore();
+        int dealerScore = dealer.getScore();
+
         String message = null;
         if (playerScore == dealerScore && dealerScore <= 21 && playerScore <= 21) {
             message = "Push";
         } else if (playerScore == 21 || dealerScore > 21 || (playerScore > dealerScore && playerScore <= 21)) {
             message = "You win";
-            win(betValue);
+//            win(betValue);
         } else if (dealerScore == 21 || playerScore > 21 || (playerScore < dealerScore && dealerScore <= 21)) {
             message = "Dealer wins";
         }
-        System.out.println("\n--> " + message + "\n");
+        return message;
     }
 
     public int win(int betValue) {
-        int firstCard = player.getCards().get(0).getPoints();
-        int secondCard = player.getCards().get(1).getPoints();
+        int firstCard = 0;
+        int secondCard = 0;
 
         if ((firstCard + secondCard) == 21) {
             player.setCredits(player.getCredits() + (int) (betValue * 2.5));
@@ -77,7 +84,7 @@ public class BlackJackRules implements BlackJackRulesInterface {
     }
 
     public void deal() {
-        prepareTable();
+        deck.shuffle();
 
         giveCard(player);
         giveCard(player);
@@ -91,6 +98,13 @@ public class BlackJackRules implements BlackJackRulesInterface {
         deck.getDeck().remove(0);
     }
 
+    public void putBackToDeck(Hand player){
+        for(Node card:player.getCards()){
+            deck.getDeck().add((Card)card);
+        }
+    }
+
+
     public void playersCards() {
         System.out.println("Player cards (" + player.getScore() + ")");
         player.showCards();
@@ -98,4 +112,7 @@ public class BlackJackRules implements BlackJackRulesInterface {
         dealer.showCards();
     }
 
+    public DeckOfCards getDeck() {
+        return deck;
+    }
 }

@@ -1,34 +1,57 @@
 package com.company;
 
+import javafx.concurrent.Task;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class DeckOfCards {
+public class DeckOfCards{
     private List<Card> deck;
+    private Task task;
 
     public DeckOfCards() {
         deck = new ArrayList<>();
-        for (Suit suit : Suit.values()) {
-            for (Value value : Value.values()) {
-                this.deck.add(new Card(value, suit));
+        task = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                for (Suit suit : Suit.values()) {
+                    for (Value value : Value.values()) {
+                        deck.add(new Card(value, suit));
+                    }
+                }
+                System.out.println("Created");
+                return deck;
             }
-        }
+        };
+        new Thread(task).start();
     }
+
+//    public DeckOfCards() {
+//        deck = new ArrayList<>();
+//        for (Suit suit : Suit.values()) {
+//            for (Value value : Value.values()) {
+//                deck.add(new Card(value, suit));
+//                System.out.println(deck.size());
+//            }
+//        }
+//    }
+
+
+    public Task<List<Card>> getTask() {
+        return task;
+    }
+
     public void shuffle() {
-        List<Card> temp = new ArrayList<>();
-        while (!deck.isEmpty()) {
-            int loc = (int) (Math.random() * deck.size());
-            temp.add(deck.get(loc));
-            deck.remove(loc);
-        }
-        deck = temp;
+        Collections.shuffle(deck);
     }
 
     public List<Card> getDeck() {
         return deck;
     }
 
-    public void setDeck(List<Card> deck) {
-        this.deck = deck;
+    public void moveBackToDeck(){
+
     }
+
 }

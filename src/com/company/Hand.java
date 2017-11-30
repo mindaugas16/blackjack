@@ -1,27 +1,38 @@
 package com.company;
 
-import java.util.ArrayList;
-import java.util.List;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 
-public class Hand {
-    private List<Card> cards;
+public class Hand{
+    private ObservableList<Node> cards;
     private int credits = 0;
-    private int score = 0;
+    private int aces = 0;
+    private SimpleIntegerProperty score = new SimpleIntegerProperty(0);
 
-    public Hand() {
-        cards = new ArrayList<>();
+    public Hand(ObservableList<Node> cards,int credits) {
+        this.cards = cards;
+        this.credits = credits;
     }
 
-    public Hand(int credits) {
-        cards = new ArrayList<>();
-        this.credits = credits;
+    public Hand(ObservableList<Node> cards) {
+        this.cards = cards;
     }
 
     public void takeCard(Card card){
         cards.add(card);
+        if (card.getValue().equals(Value.ACE)) {
+            aces++;
+        }
+        if(score.get() + card.getPoints() > 21 && aces != 0){
+            score.set(score.get() + 1);
+            aces--;
+        }else{
+            score.set(score.get() + card.getPoints());
+        }
     }
 
-    public List<Card> getCards() {
+    public ObservableList<Node> getCards() {
         return cards;
     }
 
@@ -35,28 +46,26 @@ public class Hand {
 
 
     public void setScore(int score) {
-        this.score = score;
-    }
-
-    public int countScore(){
-        int score = 0;
-        for (Card card : getCards()) {
-            if (this.score > 10 && card.getValue().equals(Value.ACE)) {
-                score += 1;
-            } else {
-                score += card.getPoints();
-            }
-        }
-        setScore(score);
-        return score;
+        this.score.set(score);
     }
 
     public int getScore() {
-        return countScore();
+        return score.get();
     }
+
+    public SimpleIntegerProperty scoreProperty() {
+        return score;
+    }
+
     public void showCards(){
-        for(Card card:cards) {
+        for(Node card:cards) {
             System.out.println("- "+card);
         }
+    }
+
+    public void reset(){
+        cards.clear();
+        score.set(0);
+        aces = 0;
     }
 }
