@@ -1,3 +1,16 @@
-#playerScore,#dealerScore{
+#playerScore,#dealerScore,#betValue{
 -fx-text-fill:WHITE;
+}
+
+#card{
+-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 2,2,2,2 );
+}
+
+#coin{
+-fx-text-fill:WHITE;
+-fx-border-color:WHITE;
+-fx-min-width:50;
+-fx-min-height:50;
+-fx-border-radius:50;
+-fx-alignment:CENTER;
 }

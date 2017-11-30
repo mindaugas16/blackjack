@@ -31,12 +31,11 @@ public class BlackJackRules implements BlackJackRulesInterface {
         System.exit(0);
     }
 
-    public int bet(int betValue, int myCredits) {
-        myCredits = myCredits - betValue;
-        return myCredits;
+    public void bet(int betValue) {
+        player.setCredits(player.getCredits()-betValue);
     }
 
-    public void stand(int betValue) {
+    public void stand() {
         dealer.getCards().remove(1);
         giveCard(dealer);
 
@@ -54,7 +53,7 @@ public class BlackJackRules implements BlackJackRulesInterface {
         }
     }
 
-    public String whoWins() {
+    public String whoWins(int betValue) {
         int playerScore = player.getScore();
         int dealerScore = dealer.getScore();
 
@@ -63,14 +62,14 @@ public class BlackJackRules implements BlackJackRulesInterface {
             message = "Push";
         } else if (playerScore == 21 || dealerScore > 21 || (playerScore > dealerScore && playerScore <= 21)) {
             message = "You win";
-//            win(betValue);
+            win(betValue);
         } else if (dealerScore == 21 || playerScore > 21 || (playerScore < dealerScore && dealerScore <= 21)) {
             message = "Dealer wins";
         }
         return message;
     }
 
-    public int win(int betValue) {
+    public void win(int betValue) {
         int firstCard = 0;
         int secondCard = 0;
 
@@ -79,8 +78,6 @@ public class BlackJackRules implements BlackJackRulesInterface {
         } else {
             player.setCredits(player.getCredits() + betValue * 2);
         }
-
-        return player.getCredits();
     }
 
     public void deal() {
@@ -103,7 +100,6 @@ public class BlackJackRules implements BlackJackRulesInterface {
             deck.getDeck().add((Card)card);
         }
     }
-
 
     public void playersCards() {
         System.out.println("Player cards (" + player.getScore() + ")");

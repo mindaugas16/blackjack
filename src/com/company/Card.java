@@ -37,7 +37,7 @@ public class Card extends Parent{
         image = new Image(getClass().getResourceAsStream("cards/"+cap+".png"), wCard, hCard, true, true);
 
         Label label = new Label();
-        label.setStyle("-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 1,1,1,1 );  ");
+        label.setId("card");
         label.setPrefSize(wCard, hCard);
         label.setGraphic(new ImageView(image));
         getChildren().add(label);

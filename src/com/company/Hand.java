@@ -6,11 +6,11 @@ import javafx.scene.Node;
 
 public class Hand{
     private ObservableList<Node> cards;
-    private int credits = 0;
+    private SimpleIntegerProperty credits = new SimpleIntegerProperty(0);
     private int aces = 0;
     private SimpleIntegerProperty score = new SimpleIntegerProperty(0);
 
-    public Hand(ObservableList<Node> cards,int credits) {
+    public Hand(ObservableList<Node> cards,SimpleIntegerProperty credits) {
         this.cards = cards;
         this.credits = credits;
     }
@@ -37,13 +37,16 @@ public class Hand{
     }
 
     public int getCredits() {
+        return credits.get();
+    }
+
+    public SimpleIntegerProperty creditsProperty() {
         return credits;
     }
 
     public void setCredits(int credits) {
-        this.credits = credits;
+        this.credits.set(credits);
     }
-
 
     public void setScore(int score) {
         this.score.set(score);

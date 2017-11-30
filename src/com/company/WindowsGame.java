@@ -1,7 +1,9 @@
 package com.company;
 
 import javafx.application.Application;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,54 +19,116 @@ public class WindowsGame extends Application implements Game{
     private BlackJackRules rules;
     private Hand player;
     private Hand dealer;
-    private SimpleBooleanProperty status = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty playing = new SimpleBooleanProperty(false);
+    private SimpleIntegerProperty betValue = new SimpleIntegerProperty(0);
 
     @FXML
     private HBox playerCards,dealerCards;
     @FXML
-    private Label playerScore, dealerScore;
+    private Label playerScore, dealerScore,message,playerCredits,betValueLabel,oneDollar,tenDollar,fiftyDollar,hundredDollar;
     @FXML
-    private Button dealButton,hitButton,standButton;
-    @FXML
-    private Label message;
+    private Button dealButton,hitButton,standButton,playButton;
+
 
     public WindowsGame() {
     }
 
     @FXML
-    private void initialize(){
-        player = new Hand(playerCards.getChildren(),250);
+    private void playAction(){
+        playButton.setDisable(true);
+        player = new Hand(playerCards.getChildren(),new SimpleIntegerProperty(250));
         dealer = new Hand(dealerCards.getChildren());
         rules = new BlackJackRules(player, dealer);
 
-        dealButton.disableProperty().bind(status);
-        hitButton.disableProperty().bind(status.not());
-        standButton.disableProperty().bind(status.not());
+        rules.getDeck().getTask().setOnRunning(event -> {
+            message.setText("Shuffling...");
+        });
+
+        rules.getDeck().getTask().setOnSucceeded(event -> {
+            message.setText("");
+
+            dealButton.disableProperty().bind(playing);
+            hitButton.disableProperty().bind(playing.not());
+            standButton.disableProperty().bind(playing.not());
+
+            playerCredits.textProperty().bind(new SimpleStringProperty("$").concat(player.creditsProperty().asString()));
+            betValueLabel.textProperty().bind(new SimpleStringProperty("$").concat(betValue));
+
+            oneDollar.disableProperty().bind(new BooleanBinding() {
+                {
+                    bind(player.creditsProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    return 1>player.creditsProperty().getValue() || playing.getValue();
+                }
+            });
+            tenDollar.disableProperty().bind(new BooleanBinding() {
+                {
+                    bind(player.creditsProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    return 10>player.creditsProperty().getValue() || playing.getValue();
+                }
+            });
+            fiftyDollar.disableProperty().bind(new BooleanBinding() {
+                {
+                    bind(player.creditsProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    return 50>player.creditsProperty().getValue() || playing.getValue();
+                }
+            });
+            hundredDollar.disableProperty().bind(new BooleanBinding() {
+                {
+                    bind(player.creditsProperty());
+                }
+                @Override
+                protected boolean computeValue() {
+                    return 100>player.creditsProperty().getValue() || playing.getValue();
+                }
+            });
+
+            oneDollar.setOnMouseClicked(event1 -> {
+                betValue.setValue(betValue.getValue()+1);
+//                player.creditsProperty().setValue(player.creditsProperty().getValue()-1);
+            });
+            tenDollar.setOnMouseClicked(event1 -> {
+                betValue.setValue(betValue.getValue()+10);
+//                player.creditsProperty().setValue(player.creditsProperty().getValue()-10);
+            });
+            fiftyDollar.setOnMouseClicked(event1 -> {
+                betValue.setValue(betValue.getValue()+50);
+//                player.creditsProperty().setValue(player.creditsProperty().getValue()-50);
+            });
+            hundredDollar.setOnMouseClicked(event1 -> {
+                betValue.setValue(betValue.getValue()+100);
+//                player.creditsProperty().setValue(player.creditsProperty().getValue()-100);
+            });
+        });
     }
 
     @FXML
     public void dealAction() {
-        status.set(true);
+        playing.set(true);
         rules.prepareTable();
         resetTable();
+        rules.bet(betValue.getValue());
 
-//        rules.getDeck().getTask().setOnRunning(event -> {
-//            status.set(false);
-//            message.setText("Shuffling...");
-//        });
-//        rules.getDeck().getTask().setOnSucceeded(event -> {
-//            status.set(true);
-//            message.setText("");
-//
-//        });
         playerScore.textProperty().bind(new SimpleStringProperty("Player score: ").concat(player.scoreProperty().asString()));
         dealerScore.textProperty().bind(new SimpleStringProperty("Dealer score: ").concat(dealer.scoreProperty().asString()));
+
         rules.deal();
+        if(player.scoreProperty().getValue() == 21){
+            standAction();
+        }
     }
 
     @FXML
     private void hitAction(){
-        status.set(true);
+        playing.set(true);
         rules.giveCard(player);
         if(player.scoreProperty().get() >= 21){
             standAction();
@@ -73,9 +137,9 @@ public class WindowsGame extends Application implements Game{
 
     @FXML
     private void standAction(){
-        status.set(false);
-        rules.stand(0);
-        message.setText(rules.whoWins());
+        playing.set(false);
+        rules.stand();
+        message.setText(rules.whoWins(betValue.getValue()));
     }
 
     private void resetTable(){
@@ -90,7 +154,6 @@ public class WindowsGame extends Application implements Game{
     @Override
     public void start(Stage primaryStage) throws Exception{
         FXMLLoader loader = new FXMLLoader(getClass().getResource("startView.fxml"));
-//        loader.setController(this);
         Pane root = loader.load();
         root.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
         primaryStage.setScene(new Scene(root));
