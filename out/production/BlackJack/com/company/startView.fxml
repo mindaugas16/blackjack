@@ -9,10 +9,9 @@
 
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.control.Spinner?>
 
-
-<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.layout.Pane?>
 <BorderPane fx:id="stackPane" prefHeight="600" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.company.WindowsGame">
     <bottom>
         <VBox alignment="CENTER">
@@ -52,12 +51,8 @@
         </GridPane>
     </center>
     <left>
-        <VBox alignment="CENTER" spacing="25" style="-fx-background-color:#194D1E;">
-            <Label fx:id="betValueLabel" translateX="0" id="betValue"/>
-            <Label fx:id="oneDollar" text="1" id="coin"/>
-            <Label fx:id="tenDollar" text="10" id="coin"/>
-            <Label fx:id="fiftyDollar" text="50" id="coin"/>
-            <Label fx:id="hundredDollar" text="100" id="coin"/>
+        <VBox fx:id="chips" alignment="CENTER" spacing="25" style="-fx-background-color:#194D1E;">
+            <Label fx:id="betValueLabel" translateX="0" id="betValue" style=""/>
         </VBox>
     </left>
 </BorderPane>

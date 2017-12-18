@@ -38,7 +38,7 @@ public class ConsoleGame implements Game {
 //                case 2:
 //                    System.exit(0);
 //                default:
-//                    System.out.println("Command not exist!");
+//                    System.out.println("command not exist!");
 //                    break;
 //            }
 //            int commandInner = 0;
@@ -62,7 +62,7 @@ public class ConsoleGame implements Game {
 //                            rules.stand(betValue);
 //                            break;
 //                        default:
-//                            System.out.println("Command not exist!");
+//                            System.out.println("command not exist!");
 //                            break;
 //                    }
 //                } else {

@@ -9,8 +9,13 @@ import java.util.List;
 public class DeckOfCards{
     private List<Card> deck;
     private Task task;
+    private static DeckOfCards instance = new DeckOfCards();
 
-    public DeckOfCards() {
+    public static DeckOfCards getInstance() {
+        return instance;
+    }
+
+    private DeckOfCards() {
         deck = new ArrayList<>();
         task = new Task() {
             @Override
@@ -20,23 +25,12 @@ public class DeckOfCards{
                         deck.add(new Card(value, suit));
                     }
                 }
-                System.out.println("Created");
+//                System.out.println("Created");
                 return deck;
             }
         };
         new Thread(task).start();
     }
-
-//    public DeckOfCards() {
-//        deck = new ArrayList<>();
-//        for (Suit suit : Suit.values()) {
-//            for (Value value : Value.values()) {
-//                deck.add(new Card(value, suit));
-//                System.out.println(deck.size());
-//            }
-//        }
-//    }
-
 
     public Task<List<Card>> getTask() {
         return task;
@@ -48,10 +42,6 @@ public class DeckOfCards{
 
     public List<Card> getDeck() {
         return deck;
-    }
-
-    public void moveBackToDeck(){
-
     }
 
 }

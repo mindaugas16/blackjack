@@ -1,51 +1,24 @@
 package com.company;
 
+import com.company.creditsStrategy.CreditsBehavior;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 
-public class Hand{
+public abstract class Hand{
     private ObservableList<Node> cards;
-    private SimpleIntegerProperty credits = new SimpleIntegerProperty(0);
-    private int aces = 0;
     private SimpleIntegerProperty score = new SimpleIntegerProperty(0);
 
-    public Hand(ObservableList<Node> cards,SimpleIntegerProperty credits) {
-        this.cards = cards;
-        this.credits = credits;
-    }
+    private int aces = 0;
+
+    public CreditsBehavior creditsBehavior;
 
     public Hand(ObservableList<Node> cards) {
         this.cards = cards;
     }
 
-    public void takeCard(Card card){
-        cards.add(card);
-        if (card.getValue().equals(Value.ACE)) {
-            aces++;
-        }
-        if(score.get() + card.getPoints() > 21 && aces != 0){
-            score.set(score.get() + 1);
-            aces--;
-        }else{
-            score.set(score.get() + card.getPoints());
-        }
-    }
-
     public ObservableList<Node> getCards() {
         return cards;
-    }
-
-    public int getCredits() {
-        return credits.get();
-    }
-
-    public SimpleIntegerProperty creditsProperty() {
-        return credits;
-    }
-
-    public void setCredits(int credits) {
-        this.credits.set(credits);
     }
 
     public void setScore(int score) {
@@ -60,9 +33,16 @@ public class Hand{
         return score;
     }
 
-    public void showCards(){
-        for(Node card:cards) {
-            System.out.println("- "+card);
+    public void takeCard(Card card){
+        getCards().add(card);
+        if (card.getValue().equals(Value.ACE)) {
+            aces++;
+        }
+        if(getScore() + card.getPoints() > 21 && aces != 0){
+            setScore(getScore() + 1);
+            aces--;
+        }else{
+            setScore(getScore() + card.getPoints());
         }
     }
 
@@ -71,4 +51,5 @@ public class Hand{
         score.set(0);
         aces = 0;
     }
+
 }

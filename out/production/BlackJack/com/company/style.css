@@ -6,11 +6,19 @@
 -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 2,2,2,2 );
 }
 
-#coin{
+#chip{
 -fx-text-fill:WHITE;
 -fx-border-color:WHITE;
--fx-min-width:50;
--fx-min-height:50;
+-fx-border-width:5;
+-fx-min-width:70;
+-fx-min-height:70;
+-fx-background-radius:50;
 -fx-border-radius:50;
+-fx-border-style: dashed;
 -fx-alignment:CENTER;
+
+}
+
+#chip.oneChip{
+-fx-background-color:#C33;
 }
